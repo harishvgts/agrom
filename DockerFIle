@@ -1,24 +1,11 @@
-FROM node:16-alpine3.14 as builder
-RUN apk add --no-cache python3 make g++
-WORKDIR /usr/src/app
-COPY package.json package-lock.json ./
-Copy . ./
-RUN npm ci --production
-
-FROM node:16-alpine3.14 as app
-COPY --from=builder /usr/src/app/ .
-RUN npm run build --prod
-
-FROM nginx:1.12-alpine
-COPY --from=app /build /usr/share/nginx/html
-COPY ./nginx.conf /etc/nginx/conf.d/default.conf
-EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
-
-
+FROM ubuntu:20.04
+RUN apt-get update && \
+    apt-get upgrade -y && \
+    apt-get install -y git
+RUN git clone https://harishvgts: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@github.com/Aqgromalin-FarmTech2/aqgromalin-user.git
+RUn git clone https://harishvgts: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@github.com/Aqgromalin-FarmTech2/aqgromalin_user_react.git
 
 FROM python:3.10-alpine
-RUN git clone https://github.com/Aqgromalin-FarmTech2/aqgromalin-user.git
 ENV APP_HOME /app
 WORKDIR $APP_HOME
 ENV PYTHONUNBUFFERED 1
@@ -57,5 +44,5 @@ RUN npm run build --prod
 FROM nginx:1.12-alpine
 COPY --from=app /build /usr/share/nginx/html
 COPY /aqgromalin_user_react/nginx.conf /etc/nginx/conf.d/default.conf
-EXPOSE 80
+EXPOSE 8000
 CMD ["nginx", "-g", "daemon off;"]
